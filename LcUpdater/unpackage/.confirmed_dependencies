@@ -1,0 +1,15 @@
+{
+  "myLogin.html": {
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "css/style.css",
+      "images/p.png",
+      "js/common.js",
+      "update/update.js",
+      "plugintest/common.js",
+      "plugintest/test.js"
+    ],
+    "refer": []
+  }
+}

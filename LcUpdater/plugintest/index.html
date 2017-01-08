@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="HandheldFriendly" content="true" />
+		<meta name="MobileOptimized" content="320" />
+		<title>H5Plugin</title>
+		<script type="text/javascript" src="./js/common.js"></script>
+		<script type="text/javascript" src="./js/test.js"></script>
+		<script type="text/javascript">
+			document.addEventListener('plusready', function() {
+
+				plus.key.addEventListener('backbutton', function() {
+					plus.runtime.quit();
+				}, false);
+			}, false);
+
+			function pluginShow() {
+				plus.plugintest.PluginTestFunction("Html5", "Plus", "AsyncFunction", "MultiArgument!", function(result) {
+					alert(result[0] + "_" + result[1] + "_" + result[2] + "_" + result[3]);
+				}, function(result) {
+					alert(result)
+				});
+			}
+
+			function pluginShowArrayArgu() {
+				plus.plugintest.PluginTestFunctionArrayArgu(["Html5", "Plus", "AsyncFunction", "ArrayArgument!"], function(result) {
+					alert(result);
+				}, function(result) {
+					alert(result)
+				});
+			}
+
+			function pluginGetString() {
+				alert(plus.plugintest.PluginTestFunctionSync("Html5", "Plus", "SyncFunction", "MultiArgument!"));
+			}
+
+			function pluginGetStringArrayArgu() {
+				var Argus = plus.plugintest.PluginTestFunctionSyncArrayArgu(["Html5", "Plus", "SyncFunction", "ArrayArgument!"]);
+				alert(Argus.RetArgu1 + "_" + Argus.RetArgu2 + "_" + Argus.RetArgu3 + "_" + Argus.RetArgu4);
+			}
+		</script>
+		<link rel="stylesheet" href="./css/common.css" type="text/css" charset="utf-8" />
+	</head>
+
+	<body>
+		<header>
+			<div class="nvbt" onclick="back();">
+				<div class="iback"></div>
+			</div>
+			<div class="nvtt">PluginTest</div>
+		</header>
+		<div id="dcontent" class="dcontent">
+			<br/>
+			<div class="button" onclick="pluginShow()">PluginTestFunction()</div>
+			<div class="button" onclick="pluginShowArrayArgu()">PluginTestFunctionArrayArgu()</div>
+			<div class="button" onclick="pluginGetString()">PluginTestFunctionSync()</div>
+			<div class="button" onclick="pluginGetStringArrayArgu()">PluginTestFunctionSyncArrayArgu()</div>
+			<br/>
+		</div>
+	</body>
+
+</html>

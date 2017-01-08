@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+	</head>
+	<style>
+		.img-w {
+			width: 100px;
+			height: 100px;
+		}
+	</style>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">差量升级</h1>
+		</header>
+		<div class="mui-content">
+			<img class="img-w" src="images/p.png" />
+		</div>
+		<div>在H Builder中运行项目，测试lcupdater模块时，会提示未添加模块，需要通过离线打包的形式，在assets/data/properties.xml文件中配置feature</div>
+		<button id="login" class="mui-btn mui-btn-block mui-btn-primary" style="margin-top: 30px;" onclick="download()">下载wgtzu</button>
+		<button id="login" class="mui-btn mui-btn-block mui-btn-primary" style="margin-top: 30px;" onclick="upzip()">安装并重启</button>
+
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script src="plugintest/common.js"></script>
+	<script src="update/update.js"></script>
+	<script>
+		var fileName = '';
+		document.addEventListener('plusready', function() {
+
+		}, false);
+
+		function download() {
+			plus.nativeUI.showWaiting("正在下载...");
+			var dtask = plus.downloader.createDownload("http://192.168.0.106:8080/MyProject/aV1.0.0.wgtzu", {
+
+			}, function(d, status) {
+				plus.nativeUI.closeWaiting();
+				// 下载完成
+				if(status == 200) {
+					//默认路径有 _downloads/aV1.0.0.wgtzu，去掉_
+					fileName = d.filename.substring(1, d.filename.length);
+					console.log(fileName);
+					upzip();
+				} else {
+					alert("Download failed: " + status);
+				}
+			});
+			console.log(JSON.stringify(dtask));
+			//dtask.addEventListener( "statechanged", onStateChanged, false );
+			dtask.start();
+		}
+
+		var PKG_NAME = 'com.lc.android.lcuploader';
+
+		function upzip() {
+			var newFilePath = fileName;
+			console.log(JSON.stringify(plus.lcUpdater));
+			plus.lcUpdater.upZipFile(newFilePath, function(res) {
+				var isSuccess = res[0];
+				if(isSuccess) {
+					plus.nativeUI.alert(res[1], function() {
+						plus.runtime.restart();
+					});
+
+				} else {
+					alert(res[1]);
+				}
+
+			});
+		}
+	</script>
+
+</html>
