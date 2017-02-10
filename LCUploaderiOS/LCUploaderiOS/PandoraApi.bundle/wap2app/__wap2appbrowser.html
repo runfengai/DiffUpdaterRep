@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <title>W2ABrowser</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            
+            .header {
+                position: relative;
+                height: 44px;
+                color: #252525;
+                background-color: #efefef;
+                border-bottom: 1px solid #b6b6b6;
+            }
+            
+            .back,
+            .close {
+                display: block;
+                position: absolute;
+                top: 12px;
+                width: 12px;
+                height: 20px;
+            }
+            
+            .back {
+                left: 15px;
+                background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2012%2020'%3E%3Cpath%20d%3D'M10%2C0l2%2C2l-8%2C8l8%2C8l-2%2C2L0%2C10L10%2C0z'%20fill%3D'%238e8e93'%2F%3E%3C%2Fsvg%3E")
+            }
+            
+            .close {
+                left: 45px;
+                width: 20px;
+                display: none;
+            }
+            
+            .close::before,
+            .close::after {
+                content: '';
+                position: absolute;
+                height: 2px;
+                width: 100%;
+                top: 50%;
+                left: 0;
+                margin-top: -1px;
+                background: #8e8e93;
+            }
+            
+            .close::before {
+                -webkit-transform: rotate(45deg);
+                transform: rotate(45deg);
+            }
+            
+            .close::after {
+                -webkit-transform: rotate(-45deg);
+                transform: rotate(-45deg);
+            }
+            
+            .title {
+                position: absolute;
+                left: 70px;
+                right: 60px;
+                text-align: center;
+                height: 44px;
+                line-height: 44px;
+                font-size: 16px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                font-weight: normal;
+            }
+            
+            .progressbar {
+                position: absolute;
+                top: 43px;
+                display: none;
+                width: 100%;
+                height: 2px;
+                overflow: hidden;
+                vertical-align: middle;
+                background: #b6b6b6;
+                border-radius: 2px;
+                -webkit-transform-origin: center top;
+                transform-origin: center top;
+                -webkit-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+                position: absolute;
+            }
+            
+            .progressbar span {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #ed2e2b;
+                -webkit-transition: 150ms;
+                transition: 150ms;
+                -webkit-transform: translate3d(-100%, 0, 0);
+                transform: translate3d(-100%, 0, 0);
+            }
+            
+            .loading .progressbar {
+                display: block;
+            }
+            
+            @-webkit-keyframes progressbar-infinite {
+                0% {
+                    -webkit-transform: translate3d(-50%, 0, 0) scaleX(.5)
+                }
+                100% {
+                    -webkit-transform: translate3d(100%, 0, 0) scaleX(.5)
+                }
+            }
+            
+            @keyframes progressbar-infinite {
+                0% {
+                    transform: translate3d(-50%, 0, 0) scaleX(.5)
+                }
+                100% {
+                    transform: translate3d(100%, 0, 0) scaleX(.5)
+                }
+            }
+        </style>
+        <style id="wap2app_browser_style">
+
+        </style>
+    </head>
+
+    <body class="loading">
+        <header class="header">
+            <span class="back"></span>
+            <span class="close"></span>
+            <h1 class="title"></h1>
+        </header>
+        <div class="progressbar"><span></span></div>
+        <script>
+            (function(window) {
+                var w2aContextWebview = false;
+                var currentWebview = false;
+                var progress = 0;
+                var maxProgress = 60;
+                var progressTimer = 0;
+                var backElem = document.querySelector('.back');
+                var closeElem = document.querySelector('.close');
+                var titleElem = document.querySelector('.title');
+                var progressbarElem = document.querySelector('.progressbar');
+
+                var spanStyle = progressbarElem.querySelector('span').style;
+                var wap2app_browser = {
+                    init: function(options) { //配置
+                        if (typeof options === 'string') {
+                            options = JSON.parse(options);
+                        }
+                        this.options = options || {};
+                        var browserStyle = document.getElementById('wap2app_browser_style');
+                        browserStyle.innerHTML = this.options.styles;
+                    },
+                    setTitle: function(title) { //设置标题
+                        titleElem.innerText = decodeURIComponent(title);
+                    },
+                    showClose: function() {
+                        closeElem.style.display = 'block';
+                    },
+                    loading: function(progress) { //开始加载
+                        document.body.className = 'loading';
+                        progress = progress || 0;
+                        if (!progress) { //初始化为10
+                            spanStyle.webkitTransform = 'translate3d(-90%,0,0)';
+                        }
+                        progressTimer = setTimeout(function() {
+                            progress += Math.random() * 20;
+                            spanStyle.webkitTransform = 'translate3d(' + (-100 + progress) + '%,0,0)';
+                            if (progress < maxProgress) {
+                                wap2app_browser.loading(progress);
+                            } else {
+                                progressTimer = setTimeout(function() {
+                                    wap2app_browser.loaded();
+                                }, 2000);
+                            }
+                        }, Math.random() * 200 + 200);
+                    },
+                    loaded: function() { //加载完成
+                        progressTimer && clearTimeout(progressTimer);
+                        spanStyle.webkitTransform = 'translate3d(0,0,0)';
+                        setTimeout(function() {
+                            spanStyle.webkitTransform = 'translate3d(-100%,0,0)';
+                            document.body.className = 'loaded';
+                        }, 100);
+                    },
+                    reset: function() {
+                        closeElem.style.display = 'none';
+                        titleElem.innerText = '';
+                        spanStyle.webkitTransform = 'translate3d(-100%,0,0)';
+                    }
+                };
+                window.wap2app_browser = wap2app_browser;
+                backElem.addEventListener('click', function() {
+                    if (currentWebview) {
+                        var parentWebview = currentWebview.parent();
+                        if (parentWebview) {
+                            parentWebview.evalJS('wap2app.back();');
+                            return;
+                        }
+                    }
+                    w2aContextWebview && w2aContextWebview.evalJS('wap2app.back();');
+                });
+                closeElem.addEventListener('click', function() {
+                    w2aContextWebview && w2aContextWebview.evalJS('wap2app.close();');
+                });
+                var plusReady = function() {
+                    currentWebview = plus.webview.currentWebview();
+                    w2aContextWebview = plus.webview.getWebviewById('__W2A_CONTEXT_');
+                };
+                if (window.plus) {
+                    plusReady();
+                } else {
+                    document.addEventListener('plusready', plusReady);
+                }
+            })(window);
+        </script>
+    </body>
+
+</html>

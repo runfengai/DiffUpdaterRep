@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <title></title>
+    </head>
+
+    <body>
+        <script>
+            var plusReady = function(callback) {
+                if (window.plus) {
+                    callback && callback();
+                } else {
+                    document.addEventListener('plusready', function() {
+                        callback && callback();
+                    });
+                }
+            };
+            document.addEventListener("error", function(e) {
+                var url = e.url;
+                plusReady(function() {
+                    var webview = plus.webview.currentWebview();
+                    plus.nativeUI.confirm('无法连接服务器，请检查网络设置', function(e) {
+                        if (e.index === 2) {
+                            
+                            wap2app.setting.openAirPlaneModeSetting();
+                        } else if (e.index === 1) {
+                            window.location.replace(url);
+                        } else if (e.index === 0) {
+                            plus.runtime.quit();
+                        } else if (e.index === -1) {
+                            wap2app.close();
+                        }
+                    }.bind(this), '提示', ['退出', '重试', '设置网络']);
+                });
+            });
+        </script>
+    </body>
+
+</html>
