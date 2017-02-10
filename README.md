@@ -7,7 +7,7 @@
 
   插件开发：http://ask.dcloud.net.cn/docs/#//ask.dcloud.net.cn/article/66
 
-目前只有安卓版本，以后会加上iOS版本。
+支持安卓和iOS版本。
 
 1.LcUpdater:H Builder项目
 
@@ -16,3 +16,5 @@
 3 testzipfile: 用于测试差量升级的升级包，可以放到服务器测试下载
 
 4 diffupdater.jar引用的jar包，可以配合离线打包引入的jar包一起使用。
+
+5.LCUploaderiOS: iOS版本的离线打包项目
